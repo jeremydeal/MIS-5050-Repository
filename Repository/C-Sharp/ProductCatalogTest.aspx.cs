@@ -20,6 +20,9 @@ public partial class C_Sharp_ProductCatalogTest : System.Web.UI.Page
 
         // write priciest product to screen
         TaxableProduct priceyProduct = catalog.GetHighPricedProduct() as TaxableProduct;
-        Response.Write("<p>"+priceyProduct.Name+" is the most expensive product at "+priceyProduct.TotalPrice+" (including tax).</p>");
+
+        Response.Write("<p>" + priceyProduct.Name + " is the most expensive product at "
+            + priceyProduct.TotalPrice.ToString("C") + " (including tax), "
+            + priceyProduct.Price.ToString("C") +" (excluding tax).</p>");
     }
 }

@@ -20,6 +20,9 @@
     <a href="WebForm/CurrencyConverter.aspx" target="_blank">CurrencyConverter.aspx</a>
     
     <h3>Web Controls</h3>
-    <a href="WebControls/NewGreetingCardMaker.aspx">NewGreetingCardMaker.aspx</a>
+    <a href="WebControls/NewGreetingCardMaker.aspx" target="_blank">NewGreetingCardMaker.aspx</a>
+    
+    <h3>Advanced Controls</h3>
+    <a href="Advanced_Controls/Advanced_Controls.aspx" target="_blank">Advanced_Controls.aspx</a>
     
 </asp:Content>

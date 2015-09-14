@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Advertisements>
+  <Ad>
+    <ImageUrl>http://media.creativebloq.futurecdn.net/sites/creativebloq.com/files/images/2012/05/print-ads29.jpg</ImageUrl>
+    <NavigateUrl>http://www.mms.com/</NavigateUrl>
+    <AlternateText>link to M&#038;Ms website</AlternateText>
+    <Impressions>2</Impressions>
+    <Keyword>Ad</Keyword>
+  </Ad>
+  
+  <Ad>
+    <ImageUrl>http://www.sector.sk/files/recenzie/20101122217622/play_1.jpg</ImageUrl>
+    <NavigateUrl>https://www.playstation.com/en-us/explore/psvita/</NavigateUrl>
+    <AlternateText>link to Playstation Portable website</AlternateText>
+    <Impressions>2</Impressions>
+    <Keyword>Ad</Keyword>
+  </Ad>
+  
+  <Ad>
+    <ImageUrl>https://s-media-cache-ak0.pinimg.com/736x/e5/6b/77/e56b77050ee2c6590207b695c0ddf8b7.jpg</ImageUrl>
+    <NavigateUrl>https://www.facebook.com/Kekemetodcom</NavigateUrl>
+    <AlternateText>link to KekeMetod speech therapy website</AlternateText>
+    <Impressions>1</Impressions>
+    <Keyword>Ad</Keyword>
+  </Ad>
+  
+  <Ad>
+    <ImageUrl>http://1.bp.blogspot.com/-mLJphA-SdEA/TlvCPSZmLDI/AAAAAAAAA3A/pch6nmqinUw/s1600/Most-Amazing-Print-Advertisements-_outboxmag_11.jpg</ImageUrl>
+    <NavigateUrl>http://beansandbeyondcoffee.com/</NavigateUrl>
+    <AlternateText>link to Beans &#038; Beyond website</AlternateText>
+    <Impressions>4</Impressions>
+    <Keyword>Ad</Keyword>
+  </Ad>
+  
+</Advertisements>

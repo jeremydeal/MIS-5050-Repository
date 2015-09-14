@@ -26,8 +26,6 @@ public class ProductCatalog
 
     public Product GetHighPricedProduct()
     {
-
-
         var costliestProducts =
             from p in products
             where p.Price == GetMaxPrice()
@@ -38,7 +36,8 @@ public class ProductCatalog
 
     private decimal GetMaxPrice()
     {
-        return products.Max(p => p.Price);
+        return products.Max(
+            p => p.Price);
     }
 
     public string GetCatalogHtml()

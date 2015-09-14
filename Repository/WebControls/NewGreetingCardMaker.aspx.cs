@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -12,24 +13,30 @@ using System.Web.UI.HtmlControls;
 namespace GreetingCardMaker
 {
 
-	public partial class GreetingCardMaker : System.Web.UI.Page
-	{
-		protected void Page_Load(object sender, System.EventArgs e)
-		{
-			if (this.IsPostBack == false)
-			{
-                // Set color options.
-                lstBackColor.Items.Add("White");
-                lstBackColor.Items.Add("Red");
-                lstBackColor.Items.Add("Green");
-                lstBackColor.Items.Add("Blue");
-                lstBackColor.Items.Add("Yellow");
-				
+    public partial class GreetingCardMaker : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, System.EventArgs e)
+        {
+            if (Page.IsPostBack == false)
+            {
                 // Set font options.
-				lstFontName.Items.Add("Times New Roman");
-				lstFontName.Items.Add("Arial");
-				lstFontName.Items.Add("Verdana");
-				lstFontName.Items.Add("Tahoma");
+                lstFontName.Items.Add("Times New Roman");
+                lstFontName.Items.Add("Arial");
+                lstFontName.Items.Add("Verdana");
+                lstFontName.Items.Add("Tahoma");
+
+                // Set (checkbox list) picture choices.
+                SortedDictionary<string, string> pictures = new SortedDictionary<string, string>();
+                pictures["Happy Birthday"] = "birthday.png";
+                pictures["Merry Christmas"] = "christmas.png";
+                pictures["Get Well Soon"] = "get_well.gif";
+                pictures["Happy Graduation"] = "graduation.jpg";
+                pictures["Happy Valentine's"] = "valentine.jpg";
+
+                foreach (KeyValuePair<string, string> entry in pictures)
+                {
+                    chkPicture.Items.Add(new ListItem(entry.Key, entry.Value));
+                }
 
                 // Set border style options by adding a series of
                 // ListItem objects.
@@ -58,51 +65,68 @@ namespace GreetingCardMaker
                 item.Text = BorderStyle.Solid.ToString();
                 item.Value = ((int)BorderStyle.Solid).ToString();
                 lstBorder.Items.Add(item);
-			
-				// Select the first border option.
-				lstBorder.SelectedIndex = 0;
 
-				// Set the picture.
-				imgDefault.ImageUrl = "birthday.png";
-			}
-		}
+                // Select the first border option.
+                lstBorder.SelectedIndex = 0;
 
-		protected void cmdUpdate_Click(object sender, System.EventArgs e)
-		{
-			// Update the color.
-			pnlCard.BackColor = Color.FromName(lstBackColor.SelectedItem.Text);
+                // Set the picture.
+                chkPicture.SelectedIndex = 0;
+                imgDefault.ImageUrl = chkPicture.SelectedValue;
+            }
+        }
 
-			// Update the font.
-			lblGreeting.Font.Name = lstFontName.SelectedItem.Text;
+        protected void cmdUpdate_Click(object sender, System.EventArgs e)
+        {
+            UpdateCard();
+        }
 
-			try
-			{
-				if (Int32.Parse(txtFontSize.Text) > 0)
-				{
-					lblGreeting.Font.Size =
-						FontUnit.Point(Int32.Parse(txtFontSize.Text));
-				}
-			}
-			catch
-			{
-				// Use error handling to ignore invalid value.
-			}
+        protected void Control_IsChanged(object sender, EventArgs e)
+        {
+            UpdateCard();
+        }
 
-			// Update the border style.
-			pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
+        private void UpdateCard()
+        {
+            // Update the color.
+            pnlCard.BackColor = Color.FromName(lstBackColor.SelectedItem.Text);
 
-			// Update the picture.
-			if (chkPicture.Checked == true)
-			{
-				imgDefault.Visible = true;
-			}
-			else
-			{
-				imgDefault.Visible = false;
-			}
+            // Update the font.
+            lblGreeting.Font.Name = lstFontName.SelectedItem.Text;
 
-			// Set the text.
-			lblGreeting.Text = txtGreeting.Text;
-		}
-	}
+            // Update font color.
+            pnlCard.ForeColor = Color.FromName(lstFontColor.SelectedItem.Text);
+
+            // Update the picture.
+            if (chkPicture.SelectedValue != null)
+                imgDefault.ImageUrl = chkPicture.SelectedValue;
+
+            // Update font size.
+            try
+            {
+                if (Int32.Parse(txtFontSize.Text) > 0)
+                {
+                    lblGreeting.Font.Size =
+                        FontUnit.Point(Int32.Parse(txtFontSize.Text));
+                }
+            }
+            catch
+            {
+                // Use error handling to ignore invalid value.
+            }
+
+            // Update the sender name.
+            lblSender.Text = "";
+            if (!String.IsNullOrEmpty(txtSender.Text))
+            {
+                lblSender.Text = "From: " + txtSender.Text;
+            }
+
+            // Update the border style.
+            pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
+
+            // Set the text.
+            lblGreeting.Text = txtGreeting.Text;
+        }
+
+    }
 }
