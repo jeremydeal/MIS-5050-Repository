@@ -1,0 +1,5 @@
+C:\Users\jeremy.n.deal\Desktop\Grad School\MIS 5050 (ASP.NET)\MIS-5050-Repository\CodeRepoTests\bin\Debug\CodeRepoTests.dll
+C:\Users\jeremy.n.deal\Desktop\Grad School\MIS 5050 (ASP.NET)\MIS-5050-Repository\CodeRepoTests\bin\Debug\CodeRepoTests.pdb
+C:\Users\jeremy.n.deal\Desktop\Grad School\MIS 5050 (ASP.NET)\MIS-5050-Repository\CodeRepoTests\obj\Debug\CodeRepoTests.csprojResolveAssemblyReference.cache
+C:\Users\jeremy.n.deal\Desktop\Grad School\MIS 5050 (ASP.NET)\MIS-5050-Repository\CodeRepoTests\obj\Debug\CodeRepoTests.dll
+C:\Users\jeremy.n.deal\Desktop\Grad School\MIS 5050 (ASP.NET)\MIS-5050-Repository\CodeRepoTests\obj\Debug\CodeRepoTests.pdb

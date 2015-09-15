@@ -26,22 +26,40 @@ public class ProductCatalog
 
     public Product GetHighPricedProduct()
     {
-        var costliestProducts =
-            from p in products
-            where p.Price == GetMaxPrice()
-            select p;
+        // LINQified
+        // decimal max = GetMaxPrice()
 
-        return costliestProducts.First();
+        // var costliestProducts =
+        //    from p in products
+        //    where p.Price == max
+        //    select p;
+
+        //return costliestProducts.First();
+
+        if (products.Count > 0)
+        {
+            Product max = products[0];
+
+            foreach (var p in products)
+                if (p.Price > max.Price)
+                    max = p;
+
+            return max;
+        }
+        
+        return null;
     }
 
     private decimal GetMaxPrice()
     {
-        return products.Max(
-            p => p.Price);
+        return products.Max(p => p.Price);
     }
 
     public string GetCatalogHtml()
     {
+        // as LINQ expression
+        // return products.Cast<Product>().Aggregate("", (current, p) => current + p.GetHtml());
+
         string html = "";
         foreach (Product p in products)
             html += p.GetHtml();
