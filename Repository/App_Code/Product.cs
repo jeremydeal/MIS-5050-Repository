@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text;
 
 // Define the delegate that represents the event.
 public delegate void PriceChangedEventHandler();
@@ -53,12 +54,12 @@ public class Product
     // member methods
     public virtual string GetHtml()
     {
-        string htmlString;
-        htmlString = "<h1>" + name + "</h1><br>";
-        htmlString += "<h3>Costs: " + price.ToString("C") + "</h3><br>";
-        htmlString += "<img src='" + imageUrl + "' />";
-        htmlString += "<hr />";
-        return htmlString;
+        StringBuilder builder = new StringBuilder();
+        builder.AppendFormat("<h1>{0}</h1><br>", Name);
+        builder.AppendFormat("<h3>Costs: {0:C}</h3><br>", Price);
+        builder.AppendFormat("<img src='{0}' />", ImageUrl);
+        builder.Append("<hr />");
+        return builder.ToString();
     }
 
     public Product(string name, decimal price, string imageUrl)

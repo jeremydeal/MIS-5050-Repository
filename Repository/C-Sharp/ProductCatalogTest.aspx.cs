@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -18,11 +19,16 @@ public partial class C_Sharp_ProductCatalogTest : System.Web.UI.Page
         // write catalog to screen
         Response.Write(catalog.GetCatalogHtml());
 
-        // write priciest product to screen
+        // write priciest product to screen AS a TaxableProduct
         TaxableProduct priceyProduct = catalog.GetHighPricedProduct() as TaxableProduct;
 
-        Response.Write("<p>" + priceyProduct.Name + " is the most expensive product at "
-            + priceyProduct.TotalPrice.ToString("C") + " (including tax), "
-            + priceyProduct.Price.ToString("C") +" (excluding tax).</p>");
+        if (priceyProduct != null)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.AppendFormat(
+                "<p>{0} is the most expensive product at {1:C} (including tax), {2:C} (excluding tax).</p>",
+                priceyProduct.Name, priceyProduct.TotalPrice, priceyProduct.Price);
+            Response.Write(builder.ToString());
+        }
     }
 }

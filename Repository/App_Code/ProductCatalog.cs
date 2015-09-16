@@ -27,7 +27,7 @@ public class ProductCatalog
     public Product GetHighPricedProduct()
     {
         // LINQified
-        // decimal max = GetMaxPrice()
+        // decimal max = products.Max(p => p.Price);    // max aggregate using a lambda
 
         // var costliestProducts =
         //    from p in products
@@ -48,11 +48,6 @@ public class ProductCatalog
         }
         
         return null;
-    }
-
-    private decimal GetMaxPrice()
-    {
-        return products.Max(p => p.Price);
     }
 
     public string GetCatalogHtml()

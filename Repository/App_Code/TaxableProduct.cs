@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 /// <summary>
@@ -23,11 +24,11 @@ public class TaxableProduct : Product
     // methods
     public override string GetHtml()
     {
-        string htmlString;
-        htmlString = "<h1>" + Name + "</h1><br>";
-        htmlString += "<h3>Costs: " + TotalPrice.ToString("C") + "</h3><br>";
-        htmlString += "<img src='" + ImageUrl + "' />";
-        htmlString += "<hr />";
-        return htmlString;
+        StringBuilder builder = new StringBuilder();
+        builder.AppendFormat("<h1>{0}</h1><br>", Name);
+        builder.AppendFormat("<h3>Costs: {0:C}</h3><br>", TotalPrice);
+        builder.AppendFormat("<img src='{0}' />", ImageUrl);
+        builder.Append("<hr />");
+        return builder.ToString();
     }
 }

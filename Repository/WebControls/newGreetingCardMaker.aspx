@@ -73,7 +73,7 @@
                 <asp:Panel ID="pnlCard" SkinID="greetingPanel" Style="z-index: 101; position: relative;" Height="507px" Width="339px" runat="server">
                     <br />
                     &nbsp;
-			        <asp:Label ID="lblGreeting" runat="server" Height="150px" Width="256px" />
+			        <asp:Label ID="lblGreeting" runat="server" Height="150px" Width="256px" Font-Size="32"/>
                     <br />
                     <br />
                     <br />

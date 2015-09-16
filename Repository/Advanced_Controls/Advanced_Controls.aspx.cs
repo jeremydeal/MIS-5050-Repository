@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -78,35 +79,39 @@ public partial class Advanced_Controls_Advanced_Controls : System.Web.UI.Page
         }
     }
 
+    #region Calendar Render Event and Helper Methods
     protected void Calendar1_OnDayRender(object sender, DayRenderEventArgs e)
     {
-        // weekends not selectable
-        if (e.Day.IsWeekend)
-            e.Day.IsSelectable = false;
+        GenerateBirthdayLabels(e);
+        SetCalendarVisibiltyAndSelection(e);
+    }
 
-        // declare birthdays
+    private void GenerateBirthdayLabels(DayRenderEventArgs e)
+    {
+        List<Label> labels = new List<Label>();
+
         Dictionary<string, DateTime> birthdays = new Dictionary<string, DateTime>();
         birthdays.Add("Jeremy", new DateTime(1988, 12, 25));
 
-        // generate birthday labels
-        List<Label> labels = new List<Label>();
-
-        foreach (var kv in birthdays)
+        foreach (var bd in birthdays)
         {
-            string name = kv.Key;
-            DateTime birthdate = kv.Value;
+            string name = bd.Key;
+            DateTime birthdate = bd.Value;
             DateTime compareDate = e.Day.Date;
 
-            // determine if the birthday is before, after, or on the Calendar date being rendered
+            // is birthday before, after, or on the date being rendered?
             int dateComparison = CompareDatesIgnoreYear(compareDate, birthdate);
 
-            // update Label text with birthday announcements
+            // update Label with birthday announcements
             if (dateComparison == 0)
-                labels.Add(CreateLabel("Happy birthday, " + name + "!", true));
+                labels.Add(
+                    CreateLabel(String.Format("Happy birthday, {0}!", name), Color.LawnGreen));
             else if (dateComparison == 1) // compareDate is after
-                labels.Add(CreateLabel("After " + name + "'s birthday."));
+                labels.Add(
+                    CreateLabel(String.Format("After {0}'s birthday.", name), Color.Black));
             else if (dateComparison == -1) // compareDate is before
-                labels.Add(CreateLabel("Before " + name + "'s birthday."));
+                labels.Add(
+                    CreateLabel(String.Format("Before {0}'s birthday.", name), Color.Black));
         }
 
         // add finished Label to Cell
@@ -115,89 +120,17 @@ public partial class Advanced_Controls_Advanced_Controls : System.Web.UI.Page
             e.Cell.Controls.Add(new LiteralControl("<br />"));
             e.Cell.Controls.Add(lbl);
         }
+    }
 
-        // hide other months' days
+    private static void SetCalendarVisibiltyAndSelection(DayRenderEventArgs e)
+    {
+        if (e.Day.IsWeekend)
+            e.Day.IsSelectable = false;
+
         if (e.Day.IsOtherMonth)
             e.Cell.Controls.Clear();
     }
 
-    protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
-    {
-        UpdateCard();
-    }
-
-    protected void cmdUpload_OnClick(object sender, EventArgs e)
-    {
-        // check that file is being submitted
-        if (FileUpload1.PostedFiles.Count == 0)
-            lblUploadInfo.Text = "No file specified.";
-        else
-        {
-            // sort files into valid and invalid
-            List<HttpPostedFile> validFiles = new List<HttpPostedFile>();
-            List<string> uploadedFilenames = new List<string>();
-            List<string> rejectedFilenames = new List<string>();
-
-            foreach (HttpPostedFile file in FileUpload1.PostedFiles)
-            {
-                // check extension
-                string extension = Path.GetExtension(file.FileName);
-
-                switch (extension.ToLower())
-                {
-                    case ".bmp":
-                    case ".gif":
-                    case ".jpg":
-                    case ".jpeg":
-                    case ".png":
-                        validFiles.Add(file);
-                        break;
-                    default:
-                        rejectedFilenames.Add(Path.GetFileName(file.FileName));
-                        break;
-                }
-            }
-
-            // save valid files to server; if any upload presents an error, add that file to the rejected files list
-            foreach (var file in validFiles)
-            {
-                string serverFileName = Path.GetFileName(file.FileName);
-                // NOTE: I can't get uploadDirectory to hold a value until this call, so I had to inline it; how the heck???
-                string fullUploadPath = Path.Combine(Path.Combine(Request.PhysicalApplicationPath, "Advanced_Controls", "Uploads"), serverFileName);
-
-                try
-                {
-                    file.SaveAs(fullUploadPath);
-                    uploadedFilenames.Add(serverFileName);
-                }
-                catch
-                {
-                    rejectedFilenames.Add(serverFileName);
-                }
-            }
-
-            // generate an upload report for the label
-            if (uploadedFilenames.Count > 0)
-            {
-                lblUploadInfo.Text += "Files successfully uploaded:\n";
-                foreach (var name in uploadedFilenames)
-                    lblUploadInfo.Text += name + "\n";
-            }
-
-            if (lblUploadInfo.Text != "")
-                lblUploadInfo.Text += "\n";
-
-            if (rejectedFilenames.Count > 0)
-            {
-                lblUploadInfo.Text += "Rejected files:\n";
-                foreach (var name in rejectedFilenames)
-                    lblUploadInfo.Text += name + "\n";
-            }
-
-        }
-    }
-
-    #region Calendar Helper Methods
     private int CompareDatesIgnoreYear(DateTime compareDate, DateTime birthdate)
     {
         int offset = compareDate.Year - birthdate.Year;
@@ -205,34 +138,110 @@ public partial class Advanced_Controls_Advanced_Controls : System.Web.UI.Page
         return cDate.CompareTo(birthdate);
     }
 
-    private Label CreateLabel(string txt, bool birthday = false)
+    private Label CreateLabel(string txt, Color color)
     {
         var lbl = new Label();
         lbl.Text = txt;
-        if (birthday)
-            lbl.ForeColor = Color.LawnGreen;
+        lbl.ForeColor = color;
         return lbl;
     }
+    #endregion
 
-    private void AppendTextToLabel(Label lbl, string txt)
+
+    protected void Wizard1_FinishButtonClick(object sender, WizardNavigationEventArgs e)
     {
-        if (lbl != null)
-        {
-            if (lbl.Text.Length > 0)
-                lbl.Text += "\n";
+        UpdateCard();
+    }
 
-            lbl.Text += txt;
+    #region File Upload Event and Helper Methods
+    protected void cmdUpload_OnClick(object sender, EventArgs e)
+    {
+        // check that file is being submitted
+        if (FileUpload1.PostedFiles.Count == 0)
+            lblUploadInfo.Text = "No file specified.";
+        else
+        {
+            UploadImageFilesToServer();
         }
     }
 
-    private void PrependTextToLabel(Label lbl, string txt)
+    private void UploadImageFilesToServer()
     {
-        if (lbl != null)
-        {
-            if (lbl.Text.Length > 0)
-                lbl.Text = "\n" + lbl.Text;
+        // sort files into valid and invalid
+        List<HttpPostedFile> validFiles = new List<HttpPostedFile>();
+        List<string> uploadedFilenames = new List<string>();
+        List<string> rejectedFilenames = new List<string>();
 
-            lbl.Text = txt + lbl.Text;
+        foreach (HttpPostedFile file in FileUpload1.PostedFiles)
+            ValidateExtensionType(file, validFiles, rejectedFilenames);
+
+        // save files to server; if any upload presents an error, add to rejected files list
+        foreach (var file in validFiles)
+            AttemptToSaveImageFiles(file, uploadedFilenames, rejectedFilenames);
+
+        // generate an upload report for the label
+        lblUploadInfo.Text = GenerateUploadMessage(uploadedFilenames, rejectedFilenames);
+    }
+
+    private static string GenerateUploadMessage(List<string> uploadedFilenames, List<string> rejectedFilenames)
+    {
+        StringBuilder message = new StringBuilder();
+
+        if (uploadedFilenames.Count > 0)
+        {
+            message.Append("Files successfully uploaded:\n");
+            foreach (var name in uploadedFilenames)
+                message.AppendFormat("{0}\n", name);
+        }
+
+        if (message.Length > 0)
+            message.Append("\n");
+
+        if (rejectedFilenames.Count > 0)
+        {
+            message.Append("Rejected files:\n");
+            foreach (var name in rejectedFilenames)
+                message.AppendFormat("{0}\n", name);
+        }
+
+        return message.ToString();
+    }
+
+    private void AttemptToSaveImageFiles(HttpPostedFile file, List<string> uploadedFilenames, List<string> rejectedFilenames)
+    {
+        string serverFileName = Path.GetFileName(file.FileName);
+        // NOTE: I can't get uploadDirectory to hold a value until this call, so I had to inline it; how the heck???
+        string fullUploadPath =
+            Path.Combine(Path.Combine(Request.PhysicalApplicationPath, "Advanced_Controls", "Uploads"), serverFileName);
+
+        try
+        {
+            file.SaveAs(fullUploadPath);
+            uploadedFilenames.Add(serverFileName);
+        }
+        catch
+        {
+            rejectedFilenames.Add(serverFileName);
+        }
+    }
+
+    private void ValidateExtensionType(HttpPostedFile file, List<HttpPostedFile> validFiles, List<string> rejectedFilenames)
+    {
+        // check extension
+        string extension = Path.GetExtension(file.FileName);
+
+        switch (extension.ToLower())
+        {
+            case ".bmp":
+            case ".gif":
+            case ".jpg":
+            case ".jpeg":
+            case ".png":
+                validFiles.Add(file);
+                break;
+            default:
+                rejectedFilenames.Add(Path.GetFileName(file.FileName));
+                break;
         }
     }
     #endregion
@@ -240,46 +249,49 @@ public partial class Advanced_Controls_Advanced_Controls : System.Web.UI.Page
     #region Wizard Helper Methods
     private void UpdateCard()
     {
-        // Update the color.
+        UpdateCardAppearance();
+        UpdateCardText();
+    }
+
+    private void UpdateCardText()
+    {
+        lblSender.Text = "";
+        if (!String.IsNullOrEmpty(txtSender.Text))
+            lblSender.Text = "From: " + txtSender.Text;
+
+        lblGreeting.Text = txtGreeting.Text;
+    }
+
+    private void UpdateCardAppearance()
+    {
         pnlCard.BackColor = Color.FromName(lstBackColor.SelectedItem.Text);
-
-        // Update the font.
-        lblGreeting.Font.Name = lstFontName.SelectedItem.Text;
-
-        // Update font color.
         pnlCard.ForeColor = Color.FromName(lstFontColor.SelectedItem.Text);
+        pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
 
-        // Update the picture.
+        UpdateCardFont();
+        UpdateCardImage();
+    }
+
+    private void UpdateCardImage()
+    {
         if (chkPicture.SelectedValue != null)
             imgDefault.ImageUrl = chkPicture.SelectedValue;
+    }
 
-        // Update font size.
+    private void UpdateCardFont()
+    {
+        lblGreeting.Font.Name = lstFontName.SelectedItem.Text;
+
         try
         {
             if (Int32.Parse(txtFontSize.Text) > 0)
-            {
-                lblGreeting.Font.Size =
-                    FontUnit.Point(Int32.Parse(txtFontSize.Text));
-            }
+                lblGreeting.Font.Size = FontUnit.Point(Int32.Parse(txtFontSize.Text));
         }
         catch
         {
-            // Use error handling to ignore invalid value.
+            lblGreeting.Font.Size = FontUnit.Point(32);
         }
-
-        // Update the sender name.
-        lblSender.Text = "";
-        if (!String.IsNullOrEmpty(txtSender.Text))
-        {
-            lblSender.Text = "From: " + txtSender.Text;
-        }
-
-        // Update the border style.
-        pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
-
-        // Set the text.
-        lblGreeting.Text = txtGreeting.Text;
     }
-    #endregion
 
+    #endregion
 }

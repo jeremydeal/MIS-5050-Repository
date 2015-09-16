@@ -38,40 +38,31 @@ namespace GreetingCardMaker
                     chkPicture.Items.Add(new ListItem(entry.Key, entry.Value));
                 }
 
-                // Set border style options by adding a series of
-                // ListItem objects.
-                ListItem item = new ListItem();
-
-                // The item text indicates the name of the option.
-                item.Text = BorderStyle.None.ToString();
-
-                // The item value records the corresponding integer
-                // from the enumeration. To obtain this value, you
-                // must cast the enumeration value to an integer,
-                // and then convert the number to a string so it
-                // can be placed in the HTML page.
-                item.Value = ((int)BorderStyle.None).ToString();
-
-                // Add the item.
-                lstBorder.Items.Add(item);
-
-                // Now repeat the process for two other border styles.
-                item = new ListItem();
-                item.Text = BorderStyle.Double.ToString();
-                item.Value = ((int)BorderStyle.Double).ToString();
-                lstBorder.Items.Add(item);
-
-                item = new ListItem();
-                item.Text = BorderStyle.Solid.ToString();
-                item.Value = ((int)BorderStyle.Solid).ToString();
-                lstBorder.Items.Add(item);
-
-                // Select the first border option.
-                lstBorder.SelectedIndex = 0;
-
-                // Set the picture.
+                // Set default picture.
                 chkPicture.SelectedIndex = 0;
                 imgDefault.ImageUrl = chkPicture.SelectedValue;
+
+                // Set border style options...
+                List<ListItem> borderStyles = new List<ListItem>();
+                borderStyles.Add(
+                    new ListItem(
+                        BorderStyle.None.ToString(),
+                        ((int)BorderStyle.None).ToString()
+                    ));
+                borderStyles.Add(
+                    new ListItem(
+                        BorderStyle.Double.ToString(),
+                        ((int)BorderStyle.Double).ToString()
+                    ));
+                borderStyles.Add(
+                    new ListItem(
+                        BorderStyle.Solid.ToString(),
+                        ((int)BorderStyle.Solid).ToString()
+                    ));
+
+                // Set default border style.
+                lstBorder.Items.AddRange(borderStyles.ToArray());
+                lstBorder.SelectedIndex = 0;
             }
         }
 
@@ -87,20 +78,35 @@ namespace GreetingCardMaker
 
         private void UpdateCard()
         {
-            // Update the color.
-            pnlCard.BackColor = Color.FromName(lstBackColor.SelectedItem.Text);
+            UpdateCardAppearance();
+            UpdateCardText();
+        }
 
-            // Update the font.
+        private void UpdateCardText()
+        {
+            lblSender.Text = "";
+            if (!String.IsNullOrEmpty(txtSender.Text))
+            {
+                lblSender.Text = "From: " + txtSender.Text;
+            }
+
+            lblGreeting.Text = txtGreeting.Text;
+        }
+
+        private void UpdateCardAppearance()
+        {
+            pnlCard.BackColor = Color.FromName(lstBackColor.SelectedItem.Text);
+            pnlCard.ForeColor = Color.FromName(lstFontColor.SelectedItem.Text);
+            pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
+
+            UpdateCardImage();
+            UpdateCardFont();
+        }
+
+        private void UpdateCardFont()
+        {
             lblGreeting.Font.Name = lstFontName.SelectedItem.Text;
 
-            // Update font color.
-            pnlCard.ForeColor = Color.FromName(lstFontColor.SelectedItem.Text);
-
-            // Update the picture.
-            if (chkPicture.SelectedValue != null)
-                imgDefault.ImageUrl = chkPicture.SelectedValue;
-
-            // Update font size.
             try
             {
                 if (Int32.Parse(txtFontSize.Text) > 0)
@@ -111,22 +117,14 @@ namespace GreetingCardMaker
             }
             catch
             {
-                // Use error handling to ignore invalid value.
+                lblGreeting.Font.Size = FontUnit.Point(32);
             }
-
-            // Update the sender name.
-            lblSender.Text = "";
-            if (!String.IsNullOrEmpty(txtSender.Text))
-            {
-                lblSender.Text = "From: " + txtSender.Text;
-            }
-
-            // Update the border style.
-            pnlCard.BorderStyle = (BorderStyle)Int32.Parse(lstBorder.SelectedItem.Value);
-
-            // Set the text.
-            lblGreeting.Text = txtGreeting.Text;
         }
 
+        private void UpdateCardImage()
+        {
+            if (chkPicture.SelectedValue != null)
+                imgDefault.ImageUrl = chkPicture.SelectedValue;
+        }
     }
 }
